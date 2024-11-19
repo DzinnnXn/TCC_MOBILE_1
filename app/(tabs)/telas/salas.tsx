@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {StyleSheet, Text, View, Image, FlatList, TouchableOpacity, TextInput, Modal, Button, Alert, ScrollView, useColorScheme, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, TextInput, Modal, Button, Alert, ScrollView, useColorScheme, StatusBar } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Footer from '@/components/footer';
 import axios from 'axios';
@@ -43,7 +43,7 @@ const SalasScreen: React.FC<SalasScreenProps> = ({ onNavigate }) => {
 
   const colorScheme = useColorScheme(); // Detecta o tema (claro ou escuro)
   const themeStyles = colorScheme === 'dark' ? darkTheme : lightTheme;
-  
+
 
   useEffect(() => {
     const loadUserType = async () => {
@@ -51,7 +51,7 @@ const SalasScreen: React.FC<SalasScreenProps> = ({ onNavigate }) => {
         const storedUserType = await AsyncStorage.getItem('userType');
         if (storedUserType === 'Coordenador' || storedUserType === 'Professor') {
           setUserType(storedUserType); // atualiza o estado
-          console.log("UserType recuperado:", storedUserType); 
+          console.log("UserType recuperado:", storedUserType);
         } else {
           console.error('Tipo de usuário inválido encontrado:', storedUserType);
         }
@@ -59,23 +59,23 @@ const SalasScreen: React.FC<SalasScreenProps> = ({ onNavigate }) => {
         console.error('Erro ao carregar o userType:', error);
       }
     };
-  
+
     loadUserType();
   }, []);
-  
+
 
   const getSalas = async () => {
     try {
       const userType = await AsyncStorage.getItem('userType');
 
       if (userType === 'Coordenador') {
-        const response = await axios.get('http://192.168.0.17:8000/api/salas');
+        const response = await axios.get('http://192.168.0.215:8000/api/salas');
         setSalas(response.data);
       } else if (userType === 'Professor') {
         const storedUser = await AsyncStorage.getItem('user');
 
         if (storedUser) {
-          const response = await axios.post('http://192.168.0.17:8000/api/get_user_room/', {
+          const response = await axios.post('http://192.168.0.215:8000/api/get_user_room/', {
             username: storedUser
           });
 
@@ -98,13 +98,13 @@ const SalasScreen: React.FC<SalasScreenProps> = ({ onNavigate }) => {
     } finally {
       setLoading(false);
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     getSalas();
-}, []);
+  }, []);
 
-const handleAddRoom = async () => {
+  const handleAddRoom = async () => {
     const newRoom = {
       sala,
       descricao,
@@ -116,7 +116,7 @@ const handleAddRoom = async () => {
     };
 
     try {
-      const response = await axios.post('http://192.168.0.17:8000/api/add_sala/', newRoom);
+      const response = await axios.post('http://192.168.0.215:8000/api/add_sala/', newRoom);
       const createdRoom = response.data;
 
       setSalas([...salas, createdRoom]);
@@ -171,7 +171,6 @@ const handleAddRoom = async () => {
           <Text style={[styles.roomName, themeStyles.roomName]}>{item.sala}</Text>
           <Text style={[styles.responsavel, themeStyles.responsavel]}>Responsável: {item.responsavel}</Text>
           <Text style={[styles.descricao, themeStyles.descricao]}>{item.descricao}</Text>
-          <Text style={[styles.quantidade, themeStyles.quantidade]}>Itens: {item.quantidade_itens}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -199,12 +198,12 @@ const handleAddRoom = async () => {
   });
 
   if (loading) {
-  return (
-    <View style={[styles.container, themeStyles.container]}>
-      <Text style={styles.loading}>Carregando...</Text>
-    </View>
-  );
-}
+    return (
+      <View style={[styles.container, themeStyles.container]}>
+        <Text style={styles.loading}>Carregando...</Text>
+      </View>
+    );
+  }
 
 
   const renderRoomDetails = () => {
@@ -224,9 +223,9 @@ const handleAddRoom = async () => {
 
   return (
     <View style={[styles.container, themeStyles.container]}>
-      <StatusBar 
-        backgroundColor={themeStyles.container.backgroundColor} 
-        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} 
+      <StatusBar
+        backgroundColor={themeStyles.container.backgroundColor}
+        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
       />
       <View style={styles.header}>
         <IconButton iconName="arrow-back" onPress={() => onNavigate('ServiceHome')} />
@@ -280,109 +279,106 @@ const handleAddRoom = async () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Adicionar Sala</Text>
+        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+          <View style={[styles.modalContent, themeStyles.modalContent]}>
+            <Text style={[styles.modalTitle, themeStyles.text]}>Adicionar Sala</Text>
 
-            <Text style={styles.label}>Nome da sala:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Nome da sala:</Text>
             <TextInput
               placeholder="Nome da Sala"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={sala}
               onChangeText={setSala}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
             />
 
-            <Text style={styles.label}>Descrição:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Descrição:</Text>
             <TextInput
               placeholder="Descrição"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={descricao}
               onChangeText={setDescricao}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
               multiline
             />
 
-            <Text style={styles.label}>Localização: </Text>
+            <Text style={[styles.label, themeStyles.text]}>Localização: </Text>
             <TextInput
               placeholder="Localização"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={localizacao}
               onChangeText={setLocalizacao}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
             />
 
-            <Text style={styles.label}>Link da imagem:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Link da imagem:</Text>
             <TextInput
               placeholder="Link da Imagem"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={linkImagem}
               onChangeText={setLinkImagem}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
             />
 
-            <Text style={styles.label}>Responsável: </Text>
+            <Text style={[styles.label, themeStyles.text]}>Responsável: </Text>
             <TextInput
               placeholder="Responsável"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={responsavel}
               onChangeText={setResponsavel}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
             />
 
-            <Text style={styles.label}>Quantidade de itens: </Text>
-            <TextInput
-              placeholder="Quantidade de Itens"
-              value={quantidadeItens.toString()}
-              onChangeText={text => setQuantidadeItens(Number(text))}
-              keyboardType="numeric"
-              style={styles.input}
-            />
-
-            <Text style={styles.label} >Email do Responsável:</Text>
+            <Text style={[styles.label, themeStyles.text]} >Email do Responsável:</Text>
             <TextInput
               placeholder="Email do Responsável"
+              placeholderTextColor={themeStyles.placeholder.color}
               value={emailResponsavel.toString()}
               onChangeText={setEmailResponsavel}
-              style={styles.input}
+              style={[styles.input, themeStyles.input]}
             />
 
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleAddRoom}>
-                <Text style={styles.modalButtonText}>Adicionar</Text>
+              <TouchableOpacity style={[styles.modalButton, themeStyles.modalButton]} onPress={handleAddRoom}>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Adicionar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalButtonText}>Fechar</Text>
+              <TouchableOpacity style={[styles.modalButton, themeStyles.modalButton]} onPress={() => setModalVisible(false)}>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Fechar</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* Modal para Filtros */}
+      {/* Modal de filtragem */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={filterModalVisible}
         onRequestClose={() => setFilterModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filtrar Salas</Text>
+        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+          <View style={[styles.modalContent, themeStyles.modalContent]}>
+            <Text style={[styles.modalTitle, themeStyles.text]}>Filtrar Patrimônios</Text>
             <View style={styles.modalButtonsContainer}>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={[styles.modalButton, themeStyles.modalButton]}
                 onPress={() => { setOrder('asc'); setFilterModalVisible(false); }}
               >
-                <Text style={styles.modalButtonText}>A - Z</Text>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>A - Z</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={[styles.modalButton, themeStyles.modalButton]}
                 onPress={() => { setOrder('desc'); setFilterModalVisible(false); }}
               >
-                <Text style={styles.modalButtonText}>Z - A</Text>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Z - A</Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
-              style={styles.closeButton} // Usando uma nova estilização para o botão de fechar
+              style={[styles.closeButton, themeStyles.modalButton]}
               onPress={() => setFilterModalVisible(false)}
             >
-              <Text style={styles.closeButtonText}>Fechar</Text>
+              <Text style={[styles.closeButtonText, themeStyles.modalText]}>Fechar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -407,6 +403,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 170,
     height: 70,
+    marginTop: 10,
     resizeMode: 'contain',
     alignSelf: 'center',
   },
@@ -542,31 +539,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#8B0000',
     borderRadius: 5,
     padding: 10,
-    flex: 1, 
+    flex: 1,
     alignItems: 'center',
-    marginHorizontal: 5, 
+    marginHorizontal: 5,
   },
   modalButtonText: {
     color: '#fff',
   },
   closeButton: {
-    backgroundColor: '#8B0000', 
+    backgroundColor: '#8B0000', // Cor de fundo do botão de fechar
     borderRadius: 5,
     padding: 10,
     alignItems: 'center',
-    marginTop: 15, 
+    marginTop: 15, // Espaço acima do botão de fechar
+    paddingHorizontal: 110,
   },
   closeButtonText: {
-    color: '#fff', 
-    fontSize: 16, 
+    color: '#fff',
+    fontSize: 16,
   },
   modalButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
   },
   label: {
-    alignSelf: 'flex-start',  
+    alignSelf: 'flex-start',
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
@@ -614,6 +611,36 @@ const lightTheme = StyleSheet.create({
   title: {
     color: '#333',
   },
+  modalContainer: {
+    backgroundColor: 'fff',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+  },
+  text: {
+    color: '#000000'
+  },
+  modalText: {
+    color: '#fff'
+  },
+  input: {
+    backgroundColor: '#f0f0f0',
+    color: '#000000',
+    borderColor: '#cccccc'
+  },
+  button: {
+    backgroundColor: '#8B0000'
+  },
+  textSecondary: {
+    color: '#666666'
+  },
+  modalButton: {
+    backgroundColor: '#8B0000',
+    borderColor: '#cccccc'
+  },
+  placeholder: {
+    color: '#666666'
+  },
 });
 
 // Estilos de tema escuro
@@ -649,6 +676,36 @@ const darkTheme = StyleSheet.create({
   },
   title: {
     color: '#fff',
+  },
+  modalContainer: {
+    backgroundColor: '000',
+  },
+  modalContent: {
+    backgroundColor: '#131312',
+  },
+  text: {
+    color: '#ffffff'
+  },
+  modalText: {
+    color: '#fff'
+  },
+  input: {
+    backgroundColor: '#2a2a2a',
+    color: '#ffffff',
+    borderColor: '#555555'
+  },
+  button: {
+    backgroundColor: '#8B0000'
+  },
+  textSecondary: {
+    color: '#aaaaaa'
+  },
+  modalButton: {
+    backgroundColor: '#8B0000',
+    borderColor: '#444444'
+  },
+  placeholder: {
+    color: '#aaaaaa'
   },
 });
 

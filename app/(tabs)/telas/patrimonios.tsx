@@ -63,7 +63,7 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
 
   const fetchInventarios = async () => {
     try {
-      const response = await axios.get('http://192.168.0.17:8000/api/inventarios/');
+      const response = await axios.get('http://192.168.0.215:8000/api/inventarios/');
       setInventarios(response.data); // Atualiza o estado com os dados recebidos
     } catch (error) {
       console.error("Erro ao buscar os inventários", error);
@@ -90,7 +90,7 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
           text: "Excluir",
           onPress: async () => {
             try {
-              const response = await axios.delete('http://192.168.0.17:8000/api/delete_inventario/', {
+              const response = await axios.delete('http://192.168.0.215:8000/api/delete_inventario/', {
                 data: { num_inventario: numInventario } // Usando num_inventario no corpo da requisição
               });
 
@@ -127,7 +127,7 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
     }
 
     try {
-      const response = await axios.post('http://192.168.0.17:8000/api/add_inventario/', newItem);
+      const response = await axios.post('http://192.168.0.215:8000/api/add_inventario/', newItem);
       console.log("Resposta do servidor:", response.data); // Log da resposta do servidor
 
       Alert.alert("Sucesso", "Patrimônio adicionado com sucesso!"); // Mensagem de sucesso
@@ -147,16 +147,23 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
 
   const renderItem = ({ item }: { item: Room }) => (
     <TouchableOpacity onPress={() => handleOpenDetailsModal(item)}>
-      <View style={styles.card}>
+      <View style={[styles.card, themeStyles.card]}>
         <Image source={{ uri: item.link_imagem }} style={styles.image} />
         <View style={styles.info}>
-          <Text style={styles.patrimonioName}>{item.denominacao || 'N/A'}</Text>
-          <Text style={styles.location}>{item.sala || 'Localização não disponível'}</Text>
-          <Text style={styles.inventoryNumber}>{item.num_inventario || 'Número de inventário não disponível'}</Text>
+          <Text style={[styles.patrimonioName, themeStyles.text]}>
+            {item.denominacao || 'N/A'}
+          </Text>
+          <Text style={[styles.location, themeStyles.textSecondary]}>
+            {item.sala || 'Localização não disponível'}
+          </Text>
+          <Text style={[styles.inventoryNumber, themeStyles.textSecondary]}>
+            {item.num_inventario || 'Número de inventário não disponível'}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
   );
+
 
   const handleUpdateItem = async () => {
     if (!selectedPatrimonio) return;
@@ -173,7 +180,7 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
     }
 
     try {
-      const response = await axios.put('http://192.168.0.17:8000/api/editar_inventario/', {
+      const response = await axios.put('http://192.168.0.215:8000/api/editar_inventario/', {
         num_inventario: selectedPatrimonio.num_inventario,
         denominacao: selectedPatrimonio.denominacao,
         localizacao: selectedPatrimonio.localizacao,
@@ -224,22 +231,26 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, themeStyles.container]}>
+      <StatusBar
+        backgroundColor={themeStyles.container.backgroundColor}
+        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+      />
       <View style={styles.header}>
         <IconButton iconName="arrow-back" onPress={() => onNavigate('ServiceHome')} />
         <IconButton iconName="menu" onPress={() => onNavigate('Menu')} />
       </View>
 
       <Image source={require('@/assets/images/Logo.png')} style={styles.logo} />
-      <Text style={styles.subtitle}>Patrimônios</Text>
+      <Text style={[styles.title, themeStyles.title]}>Patrimônios</Text>
 
       <View style={styles.searchContainer}>
 
         <TextInput
           placeholder="Pesquisar..."
-          style={styles.searchInput}
+          style={[styles.searchInput, themeStyles.searchInput]}
           value={searchTerm}
-          onChangeText={setSearchTerm} // Atualiza o estado da pesquisa
+          onChangeText={setSearchTerm}
         />
 
         <View style={styles.actionButtons}>
@@ -265,61 +276,67 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Adicionar Patrimônio</Text>
+        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+          <View style={[styles.modalContent, themeStyles.modalContent]}>
+            <Text style={[styles.modalTitle, themeStyles.text]}>Adicionar Patrimônio</Text>
 
-            <Text>Denominação:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Denominação:</Text>
             <TextInput
               placeholder="Denominação"
-              style={styles.input}
+              placeholderTextColor={themeStyles.placeholder.color}
+              style={[styles.input, themeStyles.input]}
               value={newItem.denominacao}
               onChangeText={(text) => setNewItem({ ...newItem, denominacao: text })}
             />
 
-            <Text>Localização:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Localização:</Text>
             <TextInput
               placeholder="Localização"
-              style={styles.input}
+              placeholderTextColor={themeStyles.placeholder.color}
+              style={[styles.input, themeStyles.input]}
               value={newItem.localizacao}
               onChangeText={(text) => setNewItem({ ...newItem, localizacao: text })}
             />
 
-            <Text>Sala:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Sala:</Text>
             <TextInput
               placeholder="Sala"
-              style={styles.input}
+              placeholderTextColor={themeStyles.placeholder.color}
+              style={[styles.input, themeStyles.input]}
               value={newItem.sala}
               onChangeText={(text) => setNewItem({ ...newItem, sala: text })}
             />
 
-            <Text>Link da Imagem:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Link da Imagem:</Text>
             <TextInput
               placeholder="Link da Imagem"
-              style={styles.input}
+              placeholderTextColor={themeStyles.placeholder.color}
+              style={[styles.input, themeStyles.input]}
               value={newItem.link_imagem}
               onChangeText={(text) => setNewItem({ ...newItem, link_imagem: text })}
             />
 
-            <Text>Num inventário:</Text>
+            <Text style={[styles.label, themeStyles.text]}>Num inventário:</Text>
             <TextInput
               placeholder="Número de Inventário"
-              style={styles.input}
+              placeholderTextColor={themeStyles.placeholder.color}
+              style={[styles.input, themeStyles.input]}
               value={newItem.num_inventario}
               onChangeText={(text) => setNewItem({ ...newItem, num_inventario: text })}
             />
 
             <View style={styles.modalButtonsContainer}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleAddItem}>
-                <Text style={styles.modalButtonText}>Adicionar</Text>
+              <TouchableOpacity style={[styles.modalButton, themeStyles.modalButton]} onPress={handleAddItem}>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Adicionar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalButtonText}>Fechar</Text>
+              <TouchableOpacity style={[styles.modalButton, themeStyles.modalButton]} onPress={() => setModalVisible(false)}>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Fechar</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
 
       {/* Segunda modal para exibir detalhes do patrimônio */}
       <Modal
@@ -328,46 +345,46 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
         visible={detailsModalVisible}
         onRequestClose={() => setDetailsModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Detalhes do Patrimônio</Text>
+        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+          <View style={[styles.modalContent, themeStyles.modalContent]}>
+            <Text style={[styles.modalTitle, themeStyles.text]}>Detalhes do Patrimônio</Text>
 
             {selectedPatrimonio && (
               <>
-                <Text>Denominação:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Denominação:</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, themeStyles.input]}
                   value={selectedPatrimonio.denominacao}
                   editable={isEditing}
                   onChangeText={(text) => setSelectedPatrimonio({ ...selectedPatrimonio, denominacao: text })}
                 />
 
-                <Text>Localização:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Localização:</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, themeStyles.input]}
                   value={selectedPatrimonio.localizacao}
                   editable={isEditing}
                   onChangeText={(text) => setSelectedPatrimonio({ ...selectedPatrimonio, localizacao: text })}
                 />
 
-                <Text>Sala:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Sala:</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, themeStyles.input]}
                   value={selectedPatrimonio.sala}
                   editable={isEditing}
                   onChangeText={(text) => setSelectedPatrimonio({ ...selectedPatrimonio, sala: text })}
                 />
 
-                <Text>Link da imagem:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Link da imagem:</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, themeStyles.input]}
                   value={selectedPatrimonio.link_imagem}
                   editable={false}
                 />
 
-                <Text>Num Inventário:</Text>
+                <Text style={[styles.label, themeStyles.text]}>Num Inventário:</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, themeStyles.input]}
                   value={selectedPatrimonio.num_inventario}
                   editable={false}
                 />
@@ -376,26 +393,26 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
                   {userType === "Coordenador" && ( // Exibe apenas para coordenadores
                     isEditing ? (
                       <>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleUpdateItem}>
-                          <Text style={styles.modalButtonText}>Salvar</Text>
+                        <TouchableOpacity style={[styles.modalButton, themeStyles.button]} onPress={handleUpdateItem}>
+                          <Text style={[styles.modalButtonText, themeStyles.modalText]}>Salvar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => setIsEditing(false)}>
-                          <Text style={styles.modalButtonText}>Cancelar</Text>
+                        <TouchableOpacity style={[styles.modalButton, themeStyles.button]} onPress={() => setIsEditing(false)}>
+                          <Text style={[styles.modalButtonText, themeStyles.modalText]}>Cancelar</Text>
                         </TouchableOpacity>
                       </>
                     ) : (
                       <>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => { setIsEditing(true); }}>
-                          <Text style={styles.modalButtonText}>Editar</Text>
+                        <TouchableOpacity style={[styles.modalButton, themeStyles.button]} onPress={() => { setIsEditing(true); }}>
+                          <Text style={[styles.modalButtonText, themeStyles.modalText]}>Editar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => handleDeleteItem(selectedPatrimonio.num_inventario)}>
-                          <Text style={styles.modalButtonText}>Excluir</Text>
+                        <TouchableOpacity style={[styles.modalButton, themeStyles.button]} onPress={() => handleDeleteItem(selectedPatrimonio.num_inventario)}>
+                          <Text style={[styles.modalButtonText, themeStyles.modalText]}>Excluir</Text>
                         </TouchableOpacity>
                       </>
                     )
                   )}
-                  <TouchableOpacity style={styles.modalButton} onPress={() => setDetailsModalVisible(false)}>
-                    <Text style={styles.modalButtonText}>Fechar</Text>
+                  <TouchableOpacity style={[styles.modalButton, themeStyles.button]} onPress={() => setDetailsModalVisible(false)}>
+                    <Text style={[styles.modalButtonText, themeStyles.modalText]}>Fechar</Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -406,6 +423,7 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
 
 
 
+
       {/* Modal de filtragem */}
       <Modal
         animationType="slide"
@@ -413,32 +431,33 @@ const PatrimonioScreen: React.FC<PatrimonioScreenProps> = ({ onNavigate }) => {
         visible={filterModalVisible}
         onRequestClose={() => setFilterModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filtrar Patrimônios</Text>
+        <View style={[styles.modalContainer, themeStyles.modalContainer]}>
+          <View style={[styles.modalContent, themeStyles.modalContent]}>
+            <Text style={[styles.modalTitle, themeStyles.text]}>Filtrar Patrimônios</Text>
             <View style={styles.modalButtonsContainer}>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={[styles.modalButton, themeStyles.modalButton]}
                 onPress={() => { setOrder('asc'); setFilterModalVisible(false); }}
               >
-                <Text style={styles.modalButtonText}>A - Z</Text>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>A - Z</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={[styles.modalButton, themeStyles.modalButton]}
                 onPress={() => { setOrder('desc'); setFilterModalVisible(false); }}
               >
-                <Text style={styles.modalButtonText}>Z - A</Text>
+                <Text style={[styles.modalButtonText, themeStyles.modalText]}>Z - A</Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
-              style={styles.closeButton} // Usando uma nova estilização para o botão de fechar
+              style={[styles.closeButton, themeStyles.modalButton]}
               onPress={() => setFilterModalVisible(false)}
             >
-              <Text style={styles.closeButtonText}>Fechar</Text>
+              <Text style={[styles.closeButtonText, themeStyles.modalText]}>Fechar</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
 
       <FlatList
         data={searchTerm ? filteredInventarios : sortedInventarios} // Usa a lista filtrada ou a lista completa
@@ -455,14 +474,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
+    marginTop: 20,
+    marginBottom: 10,
   },
   iconButton: {
     backgroundColor: '#8B0000',
@@ -493,7 +511,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 
-  subtitle: {
+  title: {
     fontSize: 24,
     textAlign: 'center',
     marginBottom: 10,
@@ -595,6 +613,11 @@ const styles = StyleSheet.create({
     color: '#fff', // Cor do texto do botão de fechar
     fontSize: 16, // Tamanho do texto do botão de fechar
   },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+
 
 });
 
@@ -619,6 +642,51 @@ const lightTheme = StyleSheet.create({
   buttonText: {
     color: '#333',
   },
+  card: {
+    backgroundColor: '#f9f9f9',
+    borderColor: '#ccc',
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    height: 40,
+    marginRight: 10,
+    backgroundColor: '#fff'
+  },
+  modalContainer: {
+    backgroundColor: 'fff',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+  },
+  text: {
+    color: '#000000'
+  },
+  modalText: {
+    color: '#fff'
+  },
+  input: {
+    backgroundColor: '#f0f0f0',
+    color: '#000000',
+    borderColor: '#cccccc'
+  },
+  button: {
+    backgroundColor: '#8B0000'
+  },
+  textSecondary: {
+    color: '#666666'
+  },
+  modalButton: {
+    backgroundColor: '#8B0000',
+    borderColor: '#cccccc'
+  },
+  placeholder: {
+    color: '#666666'
+  },
+
 });
 
 // Estilos de tema escuro
@@ -630,7 +698,7 @@ const darkTheme = StyleSheet.create({
     color: '#fff',
   },
   title: {
-    color: '#ddd',
+    color: '#fff',
   },
   description: {
     color: '#ccc',
@@ -642,6 +710,51 @@ const darkTheme = StyleSheet.create({
   buttonText: {
     color: '#eee',
   },
+  card: {
+    backgroundColor: '#333',
+    borderColor: '#444',
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    height: 40,
+    marginRight: 10,
+    backgroundColor: '#fff'
+  },
+  modalContainer: {
+    backgroundColor: '000',
+  },
+  modalContent: {
+    backgroundColor: '#131312',
+  },
+  text: {
+    color: '#ffffff'
+  },
+  modalText: {
+    color: '#fff'
+  },
+  input: {
+    backgroundColor: '#2a2a2a',
+    color: '#ffffff',
+    borderColor: '#555555'
+  },
+  button: {
+    backgroundColor: '#8B0000'
+  },
+  textSecondary: {
+    color: '#aaaaaa'
+  },
+  modalButton: {
+    backgroundColor: '#8B0000',
+    borderColor: '#444444'
+  },
+  placeholder: {
+    color: '#aaaaaa'
+  },
+
 });
 
 

@@ -29,6 +29,21 @@ const Menu: React.FC<MenuProps> = ({ onNavigate }) => {
     }
   };
 
+  const getUserType = async () => {
+    try {
+      const storedUserType = await AsyncStorage.getItem('userType');
+      if (storedUserType) {
+        setUserType(storedUserType as 'Coordenador' | 'Professor');
+      }
+    } catch (error) {
+      console.error('Erro ao recuperar userType:', error);
+    }
+  };
+
+  useEffect(() => {
+    getUserType();
+  }, []);
+
   const getUserName = async () => {
     try {
       const storedUser = await AsyncStorage.getItem('user');

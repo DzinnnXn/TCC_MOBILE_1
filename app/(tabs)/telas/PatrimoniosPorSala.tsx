@@ -48,24 +48,31 @@ const PatrimoniosPorSala: React.FC<{ route: any; onNavigate: (screen: string) =>
   useEffect(() => {
     const fetchPatrimonios = async () => {
       try {
-        const response = await axios.get(`http://192.168.0.17:8000/api/inventarios/`);
+        const response = await axios.get(`http://192.168.0.215:8000/api/inventarios/`);
         const filteredPatrimonios = response.data.filter((pat: Patrimonio) =>
           pat.sala.toLowerCase() === salaNome.toLowerCase() // Filtra pelos patrimônios que pertencem à sala
         );
         setPatrimonios(filteredPatrimonios);
+  
+        // Agora, ao invés de passar a quantidade de patrimônios diretamente, podemos fazer esse cálculo:
+        setSalaData((prevData) => ({
+          ...prevData,
+          quantidade_itens: filteredPatrimonios.length,
+        }));
       } catch (error) {
         console.error('Erro ao buscar os patrimônios:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchPatrimonios();
   }, [salaNome]);
+  
 
   const deleteSala = async () => {
     try {
-      await axios.delete(`http://192.168.0.17:8000/api/delete_sala`, { data: { sala: salaNome } });
+      await axios.delete(`http://192.168.0.215:8000/api/delete_sala`, { data: { sala: salaNome } });
       Alert.alert('Sucesso', 'Sala deletada com sucesso!');
       onNavigate('Salas'); // Navega de volta para a tela Salas após a deleção
     } catch (error) {
@@ -93,7 +100,7 @@ const PatrimoniosPorSala: React.FC<{ route: any; onNavigate: (screen: string) =>
 
   const handleEdit = async () => {
     try {
-      const response = await axios.put(`http://192.168.0.17:8000/api/editar_sala`, salaData);
+      const response = await axios.put(`http://192.168.0.215:8000/api/editar_sala`, salaData);
       Alert.alert('Sucesso', 'Sala editada com sucesso!');
       setEditModalVisible(false);
     } catch (error) {
